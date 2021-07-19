@@ -1,2 +1,2 @@
 # Restart-Dynamics-NAV
-Power-shell script to restart NAV when the CPU usage hits a particular threshold. 
+Some Microsoft Dynamics NAV versions have a bug, that will consume CPU to 100% and the instance needs to be manually restarted. Microsoft has resolved the issue in a later version. however, upgrading the ERP system is not an easy task. In my particular example, CPU usage was caused by the API instance. Since the API calls are not session driven, restarting the instance won't cause many issues. This PowerShell script checks the CPU usage and restarts the NAV instance when the CPU usage hits a particular threshold. For auditing purpose, the actions are logged on windows event logs.
