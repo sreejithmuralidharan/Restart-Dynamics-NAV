@@ -20,21 +20,16 @@ function restart_nav($instanceName) {
 # Function to check CPU usage
 function check_cpu_usage(){
 
-    $Processor = (Get-WmiObject -Class win32_processor -ErrorAction Stop | Measure-Object -Property LoadPercentage -Average | Select-Object Average).Average
-    echo $Processor
-
-    $Processor = Get-Counter '\Processor(*)\% Processor Time' |
-        select -expand CounterSamples | 
-        where{$_.InstanceName -eq '_total' -and $_.CookedValue -gt 80} |
-        ForEach{Write-Host $_.CookedValue -fore Red}
-    if ($Processor -gt 80) {
+    $proc =get-counter -Counter "\Processor(_Total)\% Processor Time" -SampleInterval 5
+    $cpu=($proc.readings -split ":")[-1]
+    $cpu = ([Math]::Round($cpu, 2))
+    if ($cpu -gt 80) {
         restart_nav('API')
-        $msg = "CPU threshold reached $($Processor), NAV instance restarted"
+        $msg = "CPU threshold reached $($cpu)%, NAV instance restarted"
+        write_event_log($msg)
+    }else{
+        Write-Host "CPU within threshold $($cpu)%."
     }   
-    $msg = "CPU threshold reached $($Processor)"
-    write_event_log($msg)
-        
 }
 
 check_cpu_usage
- 
